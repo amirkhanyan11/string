@@ -186,16 +186,22 @@ void String::insert(int index, const char element) {
         
         throw std::out_of_range("Index out of range");
     }
+
     ++m_size;
     char* temp = new char[m_capacity];
+
     for(int i = 0, j = 0; i < m_size; i++) {
+
         if(i == index) {
             temp[index] = element;
         }
+
         else {
             temp[i] = m_string[j++];
         }
+
     }
+
     delete[] m_string;
     m_string = temp;
 
@@ -228,12 +234,7 @@ void String::erase(const int index) {
         return;
     }
 
-    bool flag = false;
-
-    for(int i = 0; i < m_size - 1; i++) {
-        
-        if(i < index) {continue;}
-
+    for(int i = index; i < m_size - 1; i++) {
     
         m_string[i] = m_string[i + 1];
 
@@ -369,11 +370,42 @@ const char* to_string(int num) {
     return ret.m_string;  
 }
 
-const char* to_string(double num) {   // 3.14
-    
-    
-      
+const String String::substr(const int start, const int end) const {
+
+    String res;
+
+    for(int i = start; i < end; i++) {
+        
+        res.push_back(this->at(i));
+
+    }
+
+    return res;
 }
+
+size_t String::copy(char* dest, size_t count, size_t pos) const {
+
+    size_t index = pos;
+
+    while(index < count) {
+
+        *dest = this->at(index);
+
+        index++, dest++;
+    }
+
+    *dest = '\0';
+
+    return index;
+
+}
+
+
+
+
+
+
+
 
 
 // private:
@@ -384,9 +416,11 @@ void String::resize() {
     m_capacity *= 2;
     
     char* temp = new char[m_capacity];
+
     for(int i = 0; i <= m_size; ++i) {
         temp[i] = m_string[i];
     }
+
     delete[] m_string;
     m_string = temp;
 

@@ -35,6 +35,9 @@ public:
     String& operator= (const char* other);
     const char& operator[] (const int index) const;
     void swap(String& other);
+    const String substr(const int start, const int end) const;
+    size_t copy(char* dest, size_t count, size_t pos) const;
+
 
 
 private:
