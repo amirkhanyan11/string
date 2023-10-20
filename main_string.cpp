@@ -1,19 +1,17 @@
 #include <iostream>
 #include "string.h"
+// using namespace std;
 
 
 int main() {
 
     String test = "hello";
-    String other = "world";
 
-    test.print();
+    String a = to_string(123);
 
-    test.swap(other);
+    a.print();
 
-    test.print();
-
-    other.print();
+    std::cout << a.length() << std::endl;
 
     return 0;
     

@@ -1,9 +1,10 @@
 
 String::String() {
     
-        m_capacity = 10;
-        m_size = 0;
-        m_string = new char[m_capacity];
+    m_capacity = 10;
+    m_size = 0;
+    m_string = new char[m_capacity];
+    m_string[m_size] = '\0';
 
 }
 
@@ -13,12 +14,18 @@ String::String (const char* str) {
     while(*t_str) {
         m_size++, t_str++;
     }
+
     m_capacity = m_size * 2;
     m_string = new char[m_capacity];
+
     for(int i = 0; i < m_size; i++) {
         m_string[i] = str[i];
         
     }
+
+    m_string[m_size++] = '\0';
+
+
 }
 
 String::String(const String& other) {
@@ -29,6 +36,8 @@ String::String(const String& other) {
     for(int i = 0; i < m_size; i++) {
         m_string[i] = other.at(i);
     }
+
+    m_string[m_size] = '\0';
 }
 
 String::~String() {
@@ -41,24 +50,27 @@ void String::print() const {
     for(int i = 0; i < m_size; i++) {
         std::cout << m_string[i];
     }
+
     std::cout << '\n';
 
 }
 
 const char String::at(const int index) const {
-    if(index < 0 || index >= m_size) {
+
+    if(index < 0 || index >= m_size - 1) {
         
         throw std::out_of_range("Index out of range");
     }
+
     return m_string[index];
 }
 
 const char* String::front() const {
-    return m_string;
+    return (m_size == 1) ? nullptr : m_string;
 }
 
 const char* String::back() const {
-    return (m_string + m_size - 1);
+    return (m_size == 1) ? nullptr : (m_string + m_size - 2);
 }
 
 const char* String::c_str() const {
@@ -67,7 +79,9 @@ const char* String::c_str() const {
     while(m_string[index] != '\0') {
         c_string[index++] = m_string[index];
     }
+
     c_string[m_size] = '\0';
+
     return c_string;
 }
 
@@ -76,11 +90,11 @@ bool String::empty() const {
 }
 
 const int String::length() const {
-    return (m_size);
+    return (m_size - 1);
 }
 
 const int String::size() const {
-    return (m_size);
+    return (m_size - 1);
 }
 
 const int String::capacity() const {
@@ -88,11 +102,18 @@ const int String::capacity() const {
 }
 
 void String::reserve(const int len) {
+
+    if(m_capacity - m_size >= len) {
+        return;
+    }
+
     m_capacity += len;
     char* temp = new char[m_capacity];
-    for(int i = 0; i < m_size; ++i) {
+
+    for(int i = 0; i <= m_size; ++i) {
         temp[i] = m_string[i];
     }
+
     delete[] m_string;
     m_string = temp;
 }
@@ -101,9 +122,11 @@ void String::shrink_to_fit() {
     
     m_capacity = m_size;
     char* temp = new char[m_capacity];
-    for(int i = 0; i < m_size; ++i) {
+
+    for(int i = 0; i <= m_size; ++i) {
         temp[i] = m_string[i];
     }
+
     delete[] m_string;
     m_string = temp;
 }
@@ -115,35 +138,50 @@ void String::clear() {
 }
 
 void String::insert(const int index, const char* target) {
+
     if(index < 0 || index > m_size) {
         
         throw std::out_of_range("Index out of range");
     }
+
     const char* t_target = target;
     int target_length = 0;
+
     while(*t_target) {
         target_length++, t_target++;
     }
     
-    if(m_size + target_length >= m_capacity) {
+    while(m_size + target_length >= m_capacity) {
         resize();
     }
+
     m_size += target_length;
     
     char* temp = new char[m_capacity];
+
     for(int i = 0, j = 0, k = 0; i < m_size; i++) {
-        if((i >= index) && (k + index <= target_length)) {
-            temp[i] = target[k++];            
+
+        if((i >= index) && (k < target_length)) {
+
+            temp[i] = target[k++];
+
         }
+
         else {
             temp[i] = m_string[j++];
         }
+
     }
+
+    temp[m_size] = '\0';
+
     delete[] m_string;
-    m_string = temp;        
+    m_string = temp;
+
 }
 
 void String::insert(int index, const char element) {
+
     if(index < 0 || index >= m_size) {
         
         throw std::out_of_range("Index out of range");
@@ -164,41 +202,57 @@ void String::insert(int index, const char element) {
 }
 
 void String::erase(const int index, const int quantity) {
+
     if(index < 0 || index >= m_size || quantity == 0) {
         return;
     }
-    char* temp = new char[m_capacity];
-    for(int i = 0, j = 0; i < m_size; i++) {
-        if(i >= index && i - index < quantity) {
-            continue;
-        }
-        else {
-            temp[j] = m_string[i];
-            j++;
-        }
+
+
+    for(int i = 0 ; i < m_size - quantity; i++) {
+
+        if(i < index || i > quantity) {continue;}
+
+        m_string[i] = m_string[i + quantity];
+
     }
-    m_size -= quantity;
-    delete[] m_string;
-    m_string = temp;
+
+    m_size -= quantity;  
+
+    m_string[m_size] = '\0';
+
 }
 
 void String::erase(const int index) {
-    bool flag = false;
-    for(int i = 0 ; i < m_size - 1; i++) {
-        if(i == index) {flag = true;}
-        if(flag) {
-            m_string[i] = m_string[i + 1];
-        }
+
+    if(index < 0 || index > m_size - 1) {
+        return;
     }
-    m_size--;
+
+    bool flag = false;
+
+    for(int i = 0; i < m_size - 1; i++) {
+        
+        if(i < index) {continue;}
+
+    
+        m_string[i] = m_string[i + 1];
+
+    }
+
+    m_string[m_size--] = '\0';
+    
+
 }
 
 void String::push_back(const char element) {
+
     if(m_size == m_capacity) {
         resize();
     }
-    m_string[m_size] = element;
-    ++m_size;
+
+
+    m_string[m_size++] = element;
+
     return;
 }
 
@@ -207,21 +261,29 @@ void String::pop_back() {
 }
 
 void String::append(const char* str) {
+
     const char* t_str = str;
     int str_length = 0;
+
     while(*t_str) {
         str_length++, t_str++;
     }
+
     while(m_size + str_length >= m_capacity) {
         resize();
     }
-    for(int i = m_size; i < m_size + str_length; i++) {
-        m_string[i] = str[i - m_size];
+
+    for(int i = m_size - 1; i < m_size + str_length; i++) {
+
+        m_string[i] = str[i - m_size + 1];
     }
+
     m_size += str_length;
+
+    m_string[m_size] = '\0';
 }
 
-const char* String::substr(const char* target) const {
+const char* String::find(const char* target) const {
     
     for(int i = 0; i < m_size; ) {
         int j = 0;
@@ -241,11 +303,16 @@ String& String::operator= (const String& other) {
     
     m_capacity = other.capacity();
     m_size = other.size();
+
     delete[] m_string;
     m_string = new char[m_capacity];
+
     for(int i = 0; i < m_size; i++) {
-        m_string[i] = other.at(i);
+        m_string[i] = other[i];
     }
+
+    m_string[m_size++] = '\0';
+
     return *this;
 }
 
@@ -257,4 +324,87 @@ void String::swap(String& other) {
     
 }
 
+String& String::operator= (const char* other) {
+    
+    const char* t_str = other;
 
+    while(*t_str) {
+        m_size++, t_str++;
+    }
+
+    m_capacity = m_size * 2;
+    m_string = new char[m_capacity];
+
+    for(int i = 0; i < m_size; i++) {
+        this->push_back(other[i]);
+        
+    }
+
+    m_string[m_size++] = '\0';
+
+    return *this;
+    
+}
+
+const char& String::operator[] (const int index) const {
+
+    if(index < 0 || index >= m_size - 1) {
+        
+        throw std::out_of_range("Index out of range");
+    }
+
+    return m_string[index];
+
+}
+
+const char* to_string(int num) {
+    
+    String ret;
+
+    while(num > 0) {
+        ret.push_front(((num % 10) + '0'));
+        num /= 10;
+    }
+
+    return ret.m_string;  
+}
+
+const char* to_string(double num) {   // 3.14
+    
+    
+      
+}
+
+
+// private:
+
+
+void String::resize() {
+
+    m_capacity *= 2;
+    
+    char* temp = new char[m_capacity];
+    for(int i = 0; i <= m_size; ++i) {
+        temp[i] = m_string[i];
+    }
+    delete[] m_string;
+    m_string = temp;
+
+}
+
+void String::push_front(const char element) {
+
+    if(++m_size >= m_capacity) {
+        resize();
+    }
+
+    for(int i = m_size; i >= 0; --i) {
+        m_string[i + 1] = m_string[i];    
+    }
+
+    m_string[0] = element;
+    m_string[m_size] = '\0';
+
+
+    return;
+}
