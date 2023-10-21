@@ -11,6 +11,7 @@ public:
 
 public:
     
+    friend std::ostream& operator<< (std::ostream& os, const String& str);
     friend const char* to_string(int num);
     friend const char* to_string(double num);
     void print() const;
@@ -42,8 +43,6 @@ public:
     const char* operator+ (const String& other);
     String& operator+= (const String& other);
 
-
-
 private:
 
     int m_capacity;
@@ -53,7 +52,6 @@ private:
     void resize();
 
     void push_front(const char element);
-
 
 };
 

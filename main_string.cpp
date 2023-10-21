@@ -11,7 +11,7 @@ int main() {
 
     str += str2;
 
-    str.print();
+    std::cout << str << std::endl;
 
     return 0;
     

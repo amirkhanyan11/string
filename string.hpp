@@ -452,6 +452,11 @@ size_t String::copy(char* dest, size_t count, size_t pos) const {
 }
 
 
+std::ostream& operator<<(std::ostream& os, const String& str) {
+    return os << str.c_str();
+}
+
+
 // private:
 
 
