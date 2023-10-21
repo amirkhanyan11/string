@@ -1,3 +1,4 @@
+
 class String
 {
 
@@ -9,8 +10,9 @@ public:
     ~String();
 
 public:
-
+    
     friend const char* to_string(int num);
+    friend const char* to_string(double num);
     void print() const;
     const char at(const int index) const;   
     const char* front() const;
@@ -37,6 +39,8 @@ public:
     void swap(String& other);
     const String substr(const int start, const int end) const;
     size_t copy(char* dest, size_t count, size_t pos) const;
+    const char* operator+ (const String& other);
+    String& operator+= (const String& other);
 
 
 

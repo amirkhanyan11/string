@@ -247,12 +247,12 @@ void String::erase(const int index) {
 
 void String::push_back(const char element) {
 
-    if(m_size == m_capacity) {
+    if(m_size >= m_capacity - 1) {
         resize();
     }
 
 
-    m_string[m_size++] = element;
+    m_string[m_size++] = element, m_string[m_size] = '\0';
 
     return;
 }
@@ -358,6 +358,8 @@ const char& String::operator[] (const int index) const {
 
 }
 
+// template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>
+
 const char* to_string(int num) {
     
     String ret;
@@ -368,6 +370,55 @@ const char* to_string(int num) {
     }
 
     return ret.m_string;  
+}
+
+const char* String::operator+ (const String& other) {
+
+    String temp = *this;
+
+    for(int i = 0; i < other.length(); i++) {
+        temp.push_back(other[i]);
+    }
+
+    return temp.m_string;
+
+}
+
+String& String::operator+= (const String& other) {
+
+    for(int i = 0; i < other.length(); i++) {
+        this->push_back(other[i]);
+    }
+
+    return *this;
+
+}
+
+const char* to_string(double num) {
+    
+    String ret;
+
+    int i_num = static_cast<int>(num);
+
+    ret.push_back(*to_string(num)), ret.push_back('.');
+
+    int count = 10;
+
+    while(count) {
+
+        num -= i_num;
+
+        num *= 10;
+
+        i_num = static_cast<int>(num);
+
+        ret.push_back((i_num + '0'));
+
+        count--;
+    }
+
+
+    return ret.m_string;
 }
 
 const String String::substr(const int start, const int end) const {
@@ -399,13 +450,6 @@ size_t String::copy(char* dest, size_t count, size_t pos) const {
     return index;
 
 }
-
-
-
-
-
-
-
 
 
 // private:

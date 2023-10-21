@@ -5,15 +5,13 @@
 
 int main() {
 
-    String str = "hello";
+    String str = "hehe";
 
-    char cp[10];
+    String str2 = "oaoa";
 
-    size_t limit = str.copy(cp, 3, 0);
+    str += str2;
 
-    cp[limit] = '\0';
-
-    std::cout << cp << std::endl;
+    str.print();
 
     return 0;
     
